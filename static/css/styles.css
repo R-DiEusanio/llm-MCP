@@ -1,0 +1,25 @@
+body { overflow-x: hidden; }
+
+#chat-box{
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:.5rem;
+  padding:1rem;
+  overflow-y:auto;
+  max-height:60vh;
+}
+
+td,th{ vertical-align: top; }
+
+/* Concept map container */
+#conceptDiagram{
+  width:100%;
+  height:620px;
+  border:1px solid #e5e7eb;
+  border-radius:.75rem;
+  background:#fff;
+}
+
+.concept-toolbar button{
+  margin-left:.5rem;
+}

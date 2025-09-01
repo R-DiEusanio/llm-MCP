@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Assistant Chatbot</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- GoJS (production build) -->
+  <script src="https://cdn.jsdelivr.net/npm/gojs/release/go.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-light">
+  <div class="container py-4">
+    <div class="row g-4">
+      <!-- CHAT -->
+      <div class="col-lg-7">
+        <div class="card shadow rounded-4 h-100">
+          <div class="card-body d-flex flex-column">
+            <div id="chat-box" class="mb-3 flex-grow-1"></div>
+            <div class="input-group">
+              <input id="user-input" class="form-control" placeholder="Scrivi una domanda…">
+              <button class="btn btn-primary" onclick="sendMessage()">Invia</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANNELLO LATERALE -->
+      <div class="col-lg-5">
+        <div class="card shadow rounded-4 h-100">
+          <div class="card-body d-flex flex-column gap-4">
+            <!-- QUIZ -->
+            <section>
+              <h5 class="mb-3">🎯 Genera Verifica</h5>
+              <div class="row g-2 mb-3 align-items-end">
+                <div class="col-12">
+                  <label class="form-label">Materia</label>
+                  <select id="quiz-subject" class="form-select">
+                    <option>Storia</option><option>Geografia</option>
+                    <option>Scienze</option><option>Italiano</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Argomento</label>
+                  <input id="quiz-topic" class="form-control" placeholder="Es. Seconda Guerra Mondiale">
+                </div>
+                <div class="col-4">
+                  <label class="form-label">Domande</label>
+                  <input id="quiz-n" type="number" class="form-control" min="1" max="20" value="5">
+                </div>
+                <div class="col-4">
+                  <label class="form-label">Difficoltà</label>
+                  <select id="quiz-level" class="form-select">
+                    <option value="easy">Facile</option>
+                    <option value="medium" selected>Media</option>
+                    <option value="hard">Difficile</option>
+                  </select>
+                </div>
+                <div class="col-4 d-grid">
+                  <button id="quiz-btn" class="btn btn-success">Genera quiz</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- PIANO LEZIONI -->
+            <section>
+              <h5 class="mb-3">📅 Piano lezioni</h5>
+              <button id="open-plan-panel" class="btn btn-outline-primary w-100">Configura &amp; genera</button>
+            </section>
+
+            <!-- MAPPA CONCETTUALE -->
+            <section>
+              <h5 class="mb-3">🧠 Mappa concettuale</h5>
+              <button id="open-concept-panel" class="btn btn-outline-secondary w-100">Configura &amp; genera</button>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANNELLO CONFIGURAZIONE PIANO -->
+    <div id="plan-config" class="card shadow rounded-4 mt-4 d-none">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">📅 Crea un piano di lezione</h5>
+          <button id="close-plan-panel" class="btn-close"></button>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Materia</label>
+          <input id="plan-subject" class="form-control" placeholder="es. Matematica, Storia, Italiano">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Argomento della lezione</label>
+          <input id="plan-topic" class="form-control" placeholder="es. Le equazioni di primo grado">
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Classe</label>
+            <select id="plan-grade" class="form-select">
+              <option>Scuola Elementare</option><option>Scuola Media</option><option>Scuola Superiore</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Durata della lezione</label>
+            <select id="plan-duration" class="form-select">
+              <option value="30">30 minuti</option><option value="45" selected>45 minuti</option><option value="60">60 minuti</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Obiettivi di apprendimento</label>
+          <textarea id="plan-goals" class="form-control" rows="3" placeholder="Cosa dovranno aver imparato gli studenti?"></textarea>
+        </div>
+
+        <div class="d-grid">
+          <button id="plan-btn" class="btn btn-primary">Genera piano</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANNELLO CONFIGURAZIONE MAPPA CONCETTUALE -->
+    <div id="concept-config" class="card shadow rounded-4 mt-4 d-none">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">🧠 Crea mappa concettuale</h5>
+          <button id="close-concept-panel" class="btn-close"></button>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Materia (facoltativa)</label>
+          <input id="concept-subject" class="form-control" placeholder="es. Storia">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Argomento (titolo della mappa)</label>
+          <input id="concept-topic" class="form-control" placeholder="es. Seconda Guerra Mondiale">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Numero massimo di nodi</label>
+          <input id="concept-nodes" type="number" class="form-control" min="10" max="60" value="24">
+        </div>
+
+        <div class="d-grid">
+          <button id="concept-btn" class="btn btn-secondary">Genera mappa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div id="output-box" class="d-none mt-4">
+
+      <!-- QUIZ -->
+      <div id="quiz-box" class="d-none mb-4">
+        <h3 class="mb-3 text-center">Quiz</h3>
+        <ol id="quiz-list" class="list-group list-group-numbered mb-3"></ol>
+        <button id="submit-quiz" class="btn btn-primary d-none">Invia risposte</button>
+        <div id="quiz-result" class="mt-3"></div>
+      </div>
+
+      <!-- PIANO LEZIONE -->
+      <div id="plan-box" class="d-none mb-4">
+        <h3 id="plan-title" class="mb-3 text-center"></h3>
+        <div class="table-responsive">
+          <table id="plan-table" class="table table-bordered align-middle"></table>
+        </div>
+        <button id="pdf-btn" class="btn btn-outline-secondary">Scarica PDF</button>
+      </div>
+
+      <!-- MAPPA CONCETTUALE -->
+      <div id="concept-box" class="d-none">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h3 class="mb-0">Mappa concettuale</h3>
+          <div class="concept-toolbar">
+            <button id="concept-fit" class="btn btn-sm btn-outline-secondary">Adatta</button>
+            <button id="concept-export" class="btn btn-sm btn-outline-secondary">Esporta PNG</button>
+          </div>
+        </div>
+        <div id="conceptDiagram"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- App script -->
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

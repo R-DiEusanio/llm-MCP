@@ -1,0 +1,24 @@
+# Core
+openai>=1.30.0
+langchain>=0.1.20
+langchain-community>=0.0.36
+langchain-core>=0.1.49
+
+
+# MCP
+fastmcp>=0.2.1         # SDK Python per server/client MCP
+jsonrpcserver>=5.0.7   # server compatibile MCP
+jsonrpcclient>=4.0.3   # client compatibile MCP
+
+# Utility
+python-dotenv>=1.0.1   # per gestire chiavi API da file .env
+uvicorn>=0.30.1        # per eventuale server async
+fastapi>=0.111.0       # opzionale se vuoi REST frontend
+rich>=13.7.1           # log colorati
+reportlab
+
+
+# Test (opzionale)
+pytest>=8.2.2
+
+
