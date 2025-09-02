@@ -1,4 +1,6 @@
 from __future__ import annotations
+from dotenv import load_dotenv
+load_dotenv()
 import logging, re
 from io import BytesIO
 
@@ -13,10 +15,13 @@ from clients.lesson_plan_tool import (
     LessonPlan,
     generate_custom_lesson_plan,
 )
-
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
+from clients.slide_tool import generate_slides_pptx
+from clients.summarize_tool import summarize_topic_and_optional_file
+
+
 
 # ───────────────────────── Config ──────────────────────────
 load_dotenv()
@@ -173,6 +178,57 @@ def generate_concept_map_ep():
     except Exception:
         logging.exception("Concept map generation failed")
         return jsonify({"error": "generation failed"}), 500
+
+# -------------- slide-deck endpoint ------------------------
+@app.post("/generate_slides")
+def generate_slides_ep():
+    data = request.get_json() or {}
+    subject  = (data.get("subject") or "Materia").strip()
+    topic    = (data.get("topic")   or "Argomento").strip()
+    n_slides = int(data.get("n_slides", 10))
+    try:
+        buf = generate_slides_pptx(subject, topic, n_slides)
+        fname = f"slides_{subject}_{topic}.pptx".replace(" ", "_")
+        return send_file(
+            buf,
+            as_attachment=True,
+            download_name=fname,
+            mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        )
+    except Exception:
+        logging.exception("Slide generation failed")
+        return jsonify({"error": "generation failed"}), 500
+
+
+# -------------- summarize endpoint -------------------------
+@app.post("/summarize")
+def summarize_ep():
+    # Supporta sia JSON (senza file) che multipart/form-data (con file)
+    if request.content_type and request.content_type.startswith("multipart/form-data"):
+        topic  = (request.form.get("topic") or "").strip()
+        length = (request.form.get("length") or "medium").strip().lower()
+        upfile = request.files.get("file")  # opzionale
+        if not topic and not upfile:
+            return jsonify({"error": "Specifica un argomento o allega un file."}), 400
+        try:
+            payload = summarize_topic_and_optional_file(topic=topic, length=length, file_storage=upfile)
+            return jsonify(payload.model_dump())
+        except Exception:
+            logging.exception("Summarization failed (multipart)")
+            return jsonify({"error": "summarization failed"}), 500
+    else:
+        data   = request.get_json() or {}
+        topic  = (data.get("topic") or "").strip()
+        length = (data.get("length") or "medium").strip().lower()
+        text   = (data.get("text") or "").strip() or None
+        if not topic and not text:
+            return jsonify({"error": "Specifica un argomento o del testo."}), 400
+        try:
+            payload = summarize_topic_and_optional_file(topic=topic, length=length, file_storage=None, plain_text=text)
+            return jsonify(payload.model_dump())
+        except Exception:
+            logging.exception("Summarization failed (json)")
+            return jsonify({"error": "summarization failed"}), 500
 
 
 # ────────────────────────────────────────────────────────────

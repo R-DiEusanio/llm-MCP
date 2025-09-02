@@ -130,7 +130,6 @@ def ingest_directory_to_pgvector(
             total_chunks += chunks
             total_files += 1
         except ValueError:
-            # file non supportato → lo saltiamo senza bloccare il batch
             continue
 
     conn.commit()
@@ -193,3 +192,8 @@ if __name__ == "__main__":
                 dir_path, recursive=args.recursive, source=args.source
             )
         )
+
+
+# inserire un solo file: python -m clients.ingest_tool --file data/manuale.pdf --source "nome file"
+# inserire tutti i file in data/: python -m clients.ingest_tool --dir data --source "batch"
+#/data + sottocartelle: python -m clients.ingest_tool --dir data --recursive --source "batch"

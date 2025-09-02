@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -15,6 +16,7 @@
   <!-- Styles -->
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
+
 <body class="bg-light">
   <div class="container py-4">
     <div class="row g-4">
@@ -42,8 +44,11 @@
                 <div class="col-12">
                   <label class="form-label">Materia</label>
                   <select id="quiz-subject" class="form-select">
-                    <option>Storia</option><option>Geografia</option>
-                    <option>Scienze</option><option>Italiano</option>
+                    <option value="storia">Storia</option>
+                    <option value="geografia">Geografia</option>
+                    <option value="scienze">Scienze</option>
+                    <option value="italiano">Italiano</option>
+                    <option value="latino">Latino</option>
                   </select>
                 </div>
                 <div class="col-12">
@@ -79,6 +84,18 @@
               <h5 class="mb-3">🧠 Mappa concettuale</h5>
               <button id="open-concept-panel" class="btn btn-outline-secondary w-100">Configura &amp; genera</button>
             </section>
+
+            <!-- RIASSUNTO -->
+            <section>
+              <h5 class="mb-3">📝 Riassunto AI</h5>
+              <button id="open-summary-panel" class="btn btn-outline-success w-100">Configura &amp; genera</button>
+            </section>
+
+            <!-- SLIDE -->
+            <section>
+              <h5 class="mb-3">📽️ Generazione slide</h5>
+              <button id="open-slides-panel" class="btn btn-outline-dark w-100">Configura &amp; genera</button>
+            </section>
           </div>
         </div>
       </div>
@@ -106,20 +123,25 @@
           <div class="col-md-6">
             <label class="form-label">Classe</label>
             <select id="plan-grade" class="form-select">
-              <option>Scuola Elementare</option><option>Scuola Media</option><option>Scuola Superiore</option>
+              <option>Scuola Elementare</option>
+              <option>Scuola Media</option>
+              <option>Scuola Superiore</option>
             </select>
           </div>
           <div class="col-md-6">
             <label class="form-label">Durata della lezione</label>
             <select id="plan-duration" class="form-select">
-              <option value="30">30 minuti</option><option value="45" selected>45 minuti</option><option value="60">60 minuti</option>
+              <option value="30">30 minuti</option>
+              <option value="45" selected>45 minuti</option>
+              <option value="60">60 minuti</option>
             </select>
           </div>
         </div>
 
         <div class="mb-4">
           <label class="form-label">Obiettivi di apprendimento</label>
-          <textarea id="plan-goals" class="form-control" rows="3" placeholder="Cosa dovranno aver imparato gli studenti?"></textarea>
+          <textarea id="plan-goals" class="form-control" rows="3"
+            placeholder="Cosa dovranno aver imparato gli studenti?"></textarea>
         </div>
 
         <div class="d-grid">
@@ -157,12 +179,113 @@
       </div>
     </div>
 
+    <!-- PANNELLO CONFIGURAZIONE SLIDE -->
+    <div id="slides-config" class="card shadow rounded-4 mt-4 d-none">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">📽️ Crea presentazione</h5>
+          <button id="close-slides-panel" class="btn-close"></button>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Materia</label>
+          <select id="slides-subject" class="form-select">
+            <optgroup label="Liceo Scientifico">
+              <option>Matematica</option>
+              <option>Fisica</option>
+              <option>Informatica</option>
+              <option>Scienze naturali</option>
+              <option>Chimica</option>
+              <option>Scienze della Terra</option>
+            </optgroup>
+            <optgroup label="Liceo Classico">
+              <option>Latino</option>
+              <option>Greco</option>
+              <option>Italiano</option>
+              <option>Storia</option>
+              <option>Filosofia</option>
+            </optgroup>
+            <optgroup label="Istituto Agrario">
+              <option>Agronomia</option>
+              <option>Zootecnia</option>
+              <option>Economia agraria</option>
+              <option>Trasformazioni agrarie</option>
+              <option>Chimica agraria</option>
+              <option>Fitopatologia</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Argomento</label>
+          <input id="slides-topic" class="form-control" placeholder="es. Derivate e applicazioni">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Numero di slide</label>
+          <input id="slides-n" type="number" class="form-control" min="3" max="30" value="10">
+        </div>
+
+        <div class="d-grid">
+          <button id="slides-btn" class="btn btn-dark">Genera Presentazione</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANNELLO CONFIGURAZIONE RIASSUNTO -->
+    <div id="summary-config" class="card shadow rounded-4 mt-4 d-none">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">📝 Crea riassunto</h5>
+          <button id="close-summary-panel" class="btn-close"></button>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Argomento</label>
+          <input id="summary-topic" class="form-control" placeholder="es. Seconda guerra mondiale">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Allega file (opzionale)</label>
+          <input id="summary-file" type="file" class="form-control" accept=".pdf,.doc,.docx,.txt">
+          <div class="form-text">Supportati: PDF, DOC/DOCX, TXT (max ~20MB).</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Lunghezza</label>
+          <select id="summary-length" class="form-select">
+            <option value="short">Breve</option>
+            <option value="medium" selected>Media</option>
+            <option value="long">Lunga</option>
+          </select>
+        </div>
+
+        <div class="d-grid">
+          <button id="summary-btn" class="btn btn-success">Genera riassunto</button>
+        </div>
+      </div>
+    </div>
+
     <!-- OUTPUT -->
     <div id="output-box" class="d-none mt-4">
 
       <!-- QUIZ -->
       <div id="quiz-box" class="d-none mb-4">
         <h3 class="mb-3 text-center">Quiz</h3>
+
+        <!-- MOSTRA VERSIONE LATINO (se presente) -->
+        <div id="version-wrapper" class="d-none mb-3">
+          <label class="form-label">Versione (Latino)</label>
+          <pre id="version-latin" class="form-control" style="height:auto; white-space:pre-wrap;"></pre>
+        </div>
+
+        <!-- TEXTAREA TRADUZIONE STUDENTE (solo Latino) -->
+        <div id="latino-translation-box" class="d-none mb-3">
+          <label class="form-label">La tua traduzione</label>
+          <textarea id="translation-input" class="form-control" rows="6"
+            placeholder="Scrivi qui la tua traduzione…"></textarea>
+        </div>
+
         <ol id="quiz-list" class="list-group list-group-numbered mb-3"></ol>
         <button id="submit-quiz" class="btn btn-primary d-none">Invia risposte</button>
         <div id="quiz-result" class="mt-3"></div>
@@ -186,7 +309,12 @@
             <button id="concept-export" class="btn btn-sm btn-outline-secondary">Esporta PNG</button>
           </div>
         </div>
-        <div id="conceptDiagram"></div>
+        <div id="conceptDiagram" style="height:520px;"></div>
+      </div>
+
+      <div id="summary-box" class="d-none mb-4">
+        <h3 class="mb-3 text-center">Riassunto</h3>
+        <div id="summary-content" class="card card-body bg-white border"></div>
       </div>
 
     </div>
@@ -195,4 +323,5 @@
   <!-- App script -->
   <script src="/static/js/main.js"></script>
 </body>
+
 </html>
